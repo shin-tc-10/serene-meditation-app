@@ -39,10 +39,12 @@ export function useSound() {
       loop: true,
       volume: 0,
       html5: true,
+      onplay: () => {
+        howl.fade(0, volume, 800);
+      },
     });
 
     howl.play();
-    howl.fade(0, volume, 800);
     howlRef.current = howl;
     setActiveSound(sound);
   };

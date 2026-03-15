@@ -49,7 +49,7 @@ export default function BreathingGuide({ status }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="relative flex items-center justify-center w-48 h-48">
+      <div className="relative flex items-center justify-center w-36 h-36">
         {/* outer glow ring */}
         <motion.div
           animate={{ scale, opacity: phase === "hold" ? 0.6 : 0.3 }}
@@ -60,12 +60,12 @@ export default function BreathingGuide({ status }: Props) {
         <motion.div
           animate={{ scale }}
           transition={{ duration, ease: "easeInOut" }}
-          className="w-36 h-36 rounded-full bg-gradient-to-br from-teal-400/60 to-cyan-500/60 backdrop-blur-sm border border-white/20 flex items-center justify-center"
+          className="w-28 h-28 rounded-full bg-gradient-to-br from-teal-400/60 to-cyan-500/60 backdrop-blur-sm border border-white/20 flex items-center justify-center"
         >
           <motion.div
             animate={{ scale: scale * 0.6 }}
             transition={{ duration, ease: "easeInOut" }}
-            className="w-16 h-16 rounded-full bg-white/20"
+            className="w-12 h-12 rounded-full bg-white/20"
           />
         </motion.div>
       </div>
