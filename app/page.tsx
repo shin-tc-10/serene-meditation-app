@@ -48,7 +48,13 @@ export default function Home() {
   const isActive = status === "running" || status === "paused";
 
   return (
-    <main className="h-[100dvh] overflow-hidden bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 flex flex-col items-center justify-between p-6 pb-10">
+    <main
+      className="h-[100dvh] overflow-hidden bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 flex flex-col items-center justify-between px-6"
+      style={{
+        paddingTop: "calc(24px + env(safe-area-inset-top))",
+        paddingBottom: "calc(40px + env(safe-area-inset-bottom))",
+      }}
+    >
       {/* header */}
       <div className="w-full flex items-center justify-between max-w-md">
         <div>

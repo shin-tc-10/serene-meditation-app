@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Howl } from "howler";
+import { Howl, Howler } from "howler";
 import { SoundType } from "@/types";
 
 export function useSound() {
@@ -34,11 +34,15 @@ export function useSound() {
       return;
     }
 
+    // iOS Safari: AudioContext が suspended の場合に resume
+    if (Howler.ctx && Howler.ctx.state === "suspended") {
+      Howler.ctx.resume();
+    }
+
     const howl = new Howl({
       src: [`/sounds/${sound}.mp3`],
       loop: true,
       volume: 0,
-      html5: true,
       onplay: () => {
         howl.fade(0, volume, 800);
       },
