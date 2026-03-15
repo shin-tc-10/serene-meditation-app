@@ -1,65 +1,129 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useTimer } from "@/hooks/useTimer";
+import { useSound } from "@/hooks/useSound";
+import { useSession } from "@/hooks/useSession";
+import Timer from "@/components/Timer";
+import BreathingGuide from "@/components/BreathingGuide";
+import DurationPicker from "@/components/DurationPicker";
+import SoundPlayer from "@/components/SoundPlayer";
+import Link from "next/link";
 
 export default function Home() {
+  const [durationMinutes, setDurationMinutes] = useState(10);
+  const durationSeconds = durationMinutes * 60;
+
+  const { status, start, pause, reset, formatted, progress } =
+    useTimer(durationSeconds);
+  const { activeSound, volume, play, stopAll, setVolume } = useSound();
+  const { saveSession } = useSession();
+
+  // タイマー完了時の処理
+  useEffect(() => {
+    if (status === "completed") {
+      stopAll();
+      saveSession(durationMinutes, activeSound);
+      if (typeof window !== "undefined" && Notification.permission === "granted") {
+        new Notification("瞑想完了", {
+          body: `${durationMinutes}分の瞑想が完了しました。お疲れさまでした。`,
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
+
+  // 通知許可リクエスト
+  useEffect(() => {
+    if (typeof window !== "undefined" && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  const handleReset = () => {
+    reset();
+    stopAll();
+  };
+
+  const isActive = status === "running" || status === "paused";
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 flex flex-col items-center justify-between p-6 pb-10">
+      {/* header */}
+      <div className="w-full flex items-center justify-between max-w-md">
+        <div>
+          <h1 className="text-white text-xl font-light tracking-widest">Serene</h1>
+          <p className="text-white/30 text-xs tracking-wider">瞑想タイマー</p>
+        </div>
+        <Link
+          href="/history"
+          className="text-white/40 hover:text-white/70 transition-colors text-sm"
+        >
+          履歴
+        </Link>
+      </div>
+
+      {/* center content */}
+      <div className="flex flex-col items-center gap-10 w-full max-w-md">
+        {/* duration picker */}
+        <DurationPicker
+          selected={durationMinutes}
+          onChange={(m) => { setDurationMinutes(m); reset(); stopAll(); }}
+          disabled={isActive}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+
+        {/* breathing guide */}
+        <BreathingGuide status={status} />
+
+        {/* timer ring */}
+        <Timer
+          formatted={formatted}
+          progress={progress}
+          durationSeconds={durationSeconds}
+        />
+
+        {/* controls */}
+        <div className="flex gap-4 items-center">
+          {status !== "completed" ? (
+            <>
+              <button
+                onClick={status === "running" ? pause : start}
+                className="px-8 py-3 rounded-full bg-teal-500 hover:bg-teal-400 active:scale-95 text-white font-medium text-sm transition-all duration-200 shadow-lg shadow-teal-500/30 min-w-[100px]"
+              >
+                {status === "running" ? "一時停止" : "開始"}
+              </button>
+              <button
+                onClick={handleReset}
+                disabled={status === "idle"}
+                className="px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white/70 text-sm transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                リセット
+              </button>
+            </>
+          ) : (
+            <div className="flex flex-col items-center gap-3">
+              <p className="text-white/60 text-sm">瞑想完了 ✨</p>
+              <button
+                onClick={handleReset}
+                className="px-8 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white/80 text-sm transition-all"
+              >
+                もう一度
+              </button>
+            </div>
+          )}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+
+      {/* sound player */}
+      <div className="w-full max-w-md">
+        <p className="text-white/30 text-xs text-center mb-3 tracking-widest">SOUND</p>
+        <SoundPlayer
+          activeSound={activeSound}
+          volume={volume}
+          onPlay={play}
+          onVolumeChange={setVolume}
+        />
+      </div>
+    </main>
   );
 }
