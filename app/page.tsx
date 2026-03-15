@@ -48,7 +48,7 @@ export default function Home() {
   const isActive = status === "running" || status === "paused";
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 flex flex-col items-center justify-between p-6 pb-10">
+    <main className="h-[100dvh] overflow-hidden bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 flex flex-col items-center justify-between p-6 pb-10">
       {/* header */}
       <div className="w-full flex items-center justify-between max-w-md">
         <div>
@@ -64,7 +64,7 @@ export default function Home() {
       </div>
 
       {/* center content */}
-      <div className="flex flex-col items-center gap-10 w-full max-w-md">
+      <div className="flex flex-col items-center gap-4 w-full max-w-md">
         {/* duration picker */}
         <DurationPicker
           selected={durationMinutes}

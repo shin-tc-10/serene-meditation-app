@@ -12,7 +12,7 @@ export default function Timer({ formatted, progress, durationSeconds }: Props) {
   const dash = circumference * (1 - progress);
 
   return (
-    <div className="relative flex items-center justify-center w-52 h-52">
+    <div className="relative flex items-center justify-center w-40 h-40">
       <svg className="absolute inset-0 -rotate-90 w-full h-full" viewBox="0 0 200 200">
         {/* background ring */}
         <circle
