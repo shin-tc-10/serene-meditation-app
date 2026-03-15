@@ -24,7 +24,7 @@ export default function Home() {
     if (status === "completed") {
       stopAll();
       saveSession(durationMinutes, activeSound);
-      if (typeof window !== "undefined" && Notification.permission === "granted") {
+      if (typeof window !== "undefined" && typeof Notification !== "undefined" && Notification.permission === "granted") {
         new Notification("瞑想完了", {
           body: `${durationMinutes}分の瞑想が完了しました。お疲れさまでした。`,
         });
@@ -33,9 +33,9 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
-  // 通知許可リクエスト
+  // 通知許可リクエスト（iOS Safariは未サポートのためガード）
   useEffect(() => {
-    if (typeof window !== "undefined" && Notification.permission === "default") {
+    if (typeof window !== "undefined" && typeof Notification !== "undefined" && Notification.permission === "default") {
       Notification.requestPermission();
     }
   }, []);
