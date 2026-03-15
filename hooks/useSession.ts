@@ -16,7 +16,7 @@ export function useSession() {
   const saveSession = (durationMinutes: number, sound: SoundType) => {
     const now = new Date();
     const session: Session = {
-      id: crypto.randomUUID(),
+      id: typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2),
       date: now.toLocaleDateString("ja-JP"),
       durationMinutes,
       sound,
